@@ -13,6 +13,29 @@ export interface Animal {
   birthDate?: string;
   parents?: string[];
   traits?: string;
+  ownerId?: string;
+}
+
+export interface Movement {
+  id: string;
+  type: MovementType;
+  animalId?: string;
+  date: string;
+  notes?: string;
+  ownerId?: string;
+}
+
+export interface HealthRecord {
+  id: string;
+  animalId: string;
+  date: string;
+  observations: string;
+  diagnosis?: string;
+  treatment?: string;
+  dosage?: string;
+  duration?: string;
+  result?: string;
+  ownerId?: string;
 }
 
 export interface WaterParameter {
@@ -26,26 +49,22 @@ export interface WaterParameter {
   no3: number;
   temp: number;
   notes?: string;
-}
-
-export interface HealthRecord {
-  id: string;
-  animalId: string;
-  date: string;
-  observations: string;
-  diagnosis?: string;
-  treatment?: string;
-  dosage?: string;
-  duration?: string;
-  result?: string;
+  correctiveAction?: string;
+  actionResult?: string;
+  ownerId?: string;
 }
 
 export interface Maintenance {
   id: string;
   date: string;
+  type?: MaintenanceType;
   task: string;
   description?: string;
+  volume?: number;
   additives?: string;
+  additiveName?: string;
+  dosage?: string;
+  ownerId?: string;
 }
 
 export interface Breeding {
@@ -54,10 +73,11 @@ export interface Breeding {
   pairName: string;
   maleId: string;
   femaleId: string;
+  traitsSought?: string;
   geneticGoals?: string;
   fryCount?: number;
   status: string;
-  traitsSought?: string;
+  ownerId?: string;
 }
 
 export interface Feeding {
@@ -65,7 +85,9 @@ export interface Feeding {
   date: string;
   foodType: string;
   amount: string;
+  schedule?: string;
   notes?: string;
+  ownerId?: string;
 }
 
 export interface Incident {
@@ -77,4 +99,5 @@ export interface Incident {
   location: string;
   status: string;
   resolved: boolean;
+  ownerId?: string;
 }

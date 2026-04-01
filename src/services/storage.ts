@@ -1,3 +1,13 @@
+import { 
+  Animal, 
+  WaterParameter, 
+  HealthRecord, 
+  Incident, 
+  Breeding, 
+  Maintenance, 
+  Feeding 
+} from '../types';
+
 const STORAGE_KEYS = {
   ANIMALS: 'aqualogic_animals',
   WATER: 'aqualogic_water',
@@ -18,12 +28,12 @@ export const storage = {
     localStorage.setItem(key, JSON.stringify(data));
   },
 
-  add: <T extends { id?: string }>(key: string, item: T): T[] => {
+  add: <T extends { id?: string; createdAt?: string | number | Date }>(key: string, item: T): T[] => {
     const current = storage.get<T>(key);
     const newItem = { 
       ...item, 
       id: item.id || Math.random().toString(36).substr(2, 9),
-      createdAt: new Date().toISOString()
+      createdAt: item.createdAt || new Date().toISOString()
     };
     const updated = [newItem, ...current];
     storage.save(key, updated);
