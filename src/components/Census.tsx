@@ -45,12 +45,14 @@ export const Census: React.FC<CensusProps> = ({ censusData, breedingProjects, on
                 <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => onUpdate(item.id, item.quantity + 1)}><Plus size={14} /></Button>
               </div>
             </div>
-            {item.type.includes('Alevines') && (
+            {/* FIX: Only show spawn date for Betta fry, and only if it's connected to breeding module */}
+            {item.type === 'Alevines Betta' && (
               <div className="p-2 rounded bg-slate-900 border border-white/5 flex items-center justify-between text-[8px] font-black uppercase text-aqua-400">
                 <div className="flex items-center gap-1.5"><Calendar size={10}/> Desove</div>
                 <div className="text-white">{latestSpawn ? new Date(latestSpawn.spawnDate!).toLocaleDateString() : 'SIN PENDIENTES'}</div>
               </div>
             )}
+            {/* Alevines Guppys will be manual and independent (no date box) */}
           </Card>
         ))}
       </div>
