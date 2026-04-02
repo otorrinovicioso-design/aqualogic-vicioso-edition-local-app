@@ -77,11 +77,11 @@ export const WaterParameters: React.FC<WaterParametersProps> = ({ waterParams = 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div><Label>Ubicación / Proyecto</Label>
                <Select value={formData.subgroup} onChange={e => setFormData({...formData, subgroup: e.target.value})}>
-                  <optgroup label="Sistemas Generales" className="bg-slate-900">
+                  <optgroup label="Sistemas Generales" className="bg-slate-900 text-white">
                     {STATIC_SYSTEMS.map(s => <option key={s} value={s}>{s}</option>)}
                   </optgroup>
                   {activeProjects.length > 0 && (
-                    <optgroup label="Proyectos Activos (Alevines)" className="bg-slate-900">
+                    <optgroup label="Proyectos Activos (Alevines)" className="bg-slate-900 text-white">
                       {activeProjects.map(p => (<option key={p.id} value={`Cria: ${p.pairName}`}>{p.pairName}</option>))}
                     </optgroup>
                   )}

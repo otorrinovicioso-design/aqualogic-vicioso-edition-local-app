@@ -78,7 +78,7 @@ export const MaintenanceModule: React.FC<MaintenanceModuleProps> = ({ maintenanc
                     {STATIC_CATEGORIES.map(s => <option key={s} value={s}>{s}</option>)}
                   </optgroup>
                   {activeProjects.length > 0 && (
-                    <optgroup label="Proyectos de Cría Activos" className="bg-slate-900 border-white/5 font-white uppercase shadow-lg">
+                    <optgroup label="Proyectos de Cría Activos" className="bg-slate-900 border-white/5 font-white uppercase shadow-lg text-white">
                        {activeProjects.map(p => (<option key={p.id} value={`Cria: ${p.pairName}`}>{p.pairName}</option>))}
                     </optgroup>
                   )}
