@@ -14,12 +14,12 @@ export interface Breeder {
   id: string;
   name: string;
   species: Species;
-  sex: 'M' | 'H';
-  variety: string;
-  source: string;
-  importDate: string;
+  sex: 'Macho' | 'Hembra' | string;
+  traits: string;
+  provenance: string;
+  entryDate: string;
   notes?: string;
-  status: 'active' | 'retired' | 'deceased';
+  status: 'Activo' | 'Retirado' | 'Baja' | string;
   image?: string;
 }
 
