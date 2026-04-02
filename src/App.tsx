@@ -15,19 +15,19 @@ import { Breeder, CensusSubgroup, WaterParameter, HealthRecord, Incident, Breedi
 import { Fish } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab ] = useState('home');
   const [loading, setLoading] = useState(true);
   
   // States
-  const [breeders, setBreeders] = useState<Breeder[]>([]);
-  const [census, setCensus] = useState<CensusSubgroup[]>([]);
-  const [waterParams, setWaterParams] = useState<WaterParameter[]>([]);
-  const [healthRecords, setHealthRecords] = useState<HealthRecord[]>([]);
-  const [incidents, setIncidents] = useState<Incident[]>([]);
-  const [breedingRecords, setBreedingRecords] = useState<Breeding[]>([]);
-  const [maintenanceRecords, setMaintenanceRecords] = useState<Maintenance[]>([]);
-  const [feedingRecords, setFeedingRecords] = useState<Feeding[]>([]);
-  const [losses, setLosses] = useState<Loss[]>([]);
+  const [breeders, setBreeders ] = useState<Breeder[]>([]);
+  const [census, setCensus ] = useState<CensusSubgroup[]>([]);
+  const [waterParams, setWaterParams ] = useState<WaterParameter[]>([]);
+  const [healthRecords, setHealthRecords ] = useState<HealthRecord[]>([]);
+  const [incidents, setIncidents ] = useState<Incident[]>([]);
+  const [breedingRecords, setBreedingRecords ] = useState<Breeding[]>([]);
+  const [maintenanceRecords, setMaintenanceRecords ] = useState<Maintenance[]>([]);
+  const [feedingRecords, setFeedingRecords ] = useState<Feeding[]>([]);
+  const [losses, setLosses ] = useState<Loss[]>([]);
 
   useEffect(() => {
     loadAllData();
@@ -65,30 +65,30 @@ export default function App() {
   };
 
   const handleSystemReset = (resetKeys: Record<string, boolean>) => {
-     if (resetKeys.census) { localStorage.setItem(STORAGE_KEYS.CENSUS, JSON.stringify([])); setCensus([]); }
-     if (resetKeys.water) { localStorage.setItem(STORAGE_KEYS.WATER, JSON.stringify([])); setWaterParams([]); }
-     if (resetKeys.health) { localStorage.setItem(STORAGE_KEYS.HEALTH, JSON.stringify([])); setHealthRecords([]); }
-     if (resetKeys.incidents) { localStorage.setItem(STORAGE_KEYS.INCIDENTS, JSON.stringify([])); setIncidents([]); }
-     if (resetKeys.breeding) { localStorage.setItem(STORAGE_KEYS.BREEDING, JSON.stringify([])); setBreedingRecords([]); }
-     if (resetKeys.maintenance) { localStorage.setItem(STORAGE_KEYS.MAINTENANCE, JSON.stringify([])); setMaintenanceRecords([]); }
-     if (resetKeys.feeding) { localStorage.setItem(STORAGE_KEYS.FEEDING, JSON.stringify([])); setFeedingRecords([]); }
-     if (resetKeys.losses) { localStorage.setItem(STORAGE_KEYS.LOSSES, JSON.stringify([])); setLosses([]); }
-     if (resetKeys.breeders) { localStorage.setItem(STORAGE_KEYS.BREEDERS, JSON.stringify([])); setBreeders([]); }
-     loadAllData();
+      if (resetKeys.census) { localStorage.setItem(STORAGE_KEYS.CENSUS, JSON.stringify([])); setCensus([]); }
+      if (resetKeys.water) { localStorage.setItem(STORAGE_KEYS.WATER, JSON.stringify([])); setWaterParams([]); }
+      if (resetKeys.health) { localStorage.setItem(STORAGE_KEYS.HEALTH, JSON.stringify([])); setHealthRecords([]); }
+      if (resetKeys.incidents) { localStorage.setItem(STORAGE_KEYS.INCIDENTS, JSON.stringify([])); setIncidents([]); }
+      if (resetKeys.breeding) { localStorage.setItem(STORAGE_KEYS.BREEDING, JSON.stringify([])); setBreedingRecords([]); }
+      if (resetKeys.maintenance) { localStorage.setItem(STORAGE_KEYS.MAINTENANCE, JSON.stringify([])); setMaintenanceRecords([]); }
+      if (resetKeys.feeding) { localStorage.setItem(STORAGE_KEYS.FEEDING, JSON.stringify([])); setFeedingRecords([]); }
+      if (resetKeys.losses) { localStorage.setItem(STORAGE_KEYS.LOSSES, JSON.stringify([])); setLosses([]); }
+      if (resetKeys.breeders) { localStorage.setItem(STORAGE_KEYS.BREEDERS, JSON.stringify([])); setBreeders([]); }
+      loadAllData();
   };
 
-  if (loading) return (<div className="min-h-screen flex items-center justify-center bg-slate-950 text-white font-black uppercase"><Fish className="animate-bounce" size={48} /></div>);
+  if (loading) return (<div className=\"min-h-screen flex items-center justify-center bg-slate-950 text-white font-black uppercase\"><Fish className=\"animate-bounce\" size={48} /></div>);
 
   return (
-    <div className="min-h-screen pb-24 bg-slate-950 text-slate-100 font-sans">
-      <header className="p-4 flex justify-between items-center glass sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-white/5 font-white uppercase overflow-hidden">
-        <div><h2 className="text-xl font-display font-bold text-aqua-400 tracking-tighter">AquaLogic</h2><p className="text-[10px] text-slate-500 uppercase tracking-widest font-black">Vicioso Edition</p></div>
+    <div className=\"min-h-screen pb-24 bg-slate-950 text-slate-100 font-sans\">
+      <header className=\"p-4 flex justify-between items-center glass sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-white/5 font-white uppercase overflow-hidden\">
+        <div><h2 className=\"text-xl font-display font-bold text-aqua-400 tracking-tighter\">HolaPez</h2><p className=\"text-[10px] text-slate-500 uppercase tracking-widest font-black\">Vicioso Edition</p></div>
       </header>
       
-      <main className="p-4 max-w-4xl mx-auto">
-        {activeTab === 'home' && <Dashboard censusData={census} waterParams={waterParams} incidents={incidents} onSystemReset={handleSystemReset} />}
-        {activeTab === 'census' && <div className="space-y-8"><Census censusData={census} breedingProjects={breedingRecords} onUpdate={(id, qty) => handleDataUpdate(STORAGE_KEYS.CENSUS, setCensus, 'update', undefined, id, { quantity: qty, lastUpdated: new Date().toISOString() } as any)} onInit={(data) => handleDataUpdate(STORAGE_KEYS.CENSUS, setCensus, 'add', data)} /><BreedersModule breeders={breeders} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.BREEDERS, setBreeders, 'add', item)} onDelete={(id) => handleDataUpdate(STORAGE_KEYS.BREEDERS, setBreeders, 'delete', undefined, id)} /></div>}
-        {activeTab === 'water' && <div className="space-y-8"><WaterParameters waterParams={waterParams} breedingProjects={breedingRecords} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.WATER, setWaterParams, 'add', item)} onUpdate={(id, updates) => handleDataUpdate(STORAGE_KEYS.WATER, setWaterParams, 'update', undefined, id, updates)} /><MaintenanceModule maintenanceRecords={maintenanceRecords} breedingProjects={breedingRecords} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.MAINTENANCE, setMaintenanceRecords, 'add', item)} /><FeedingModule feedingRecords={feedingRecords} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.FEEDING, setFeedingRecords, 'add', item)} /></div>}
+      <main className=\"p-4 max-w-4xl mx-auto\">
+        {activeTab === 'home' && <Dashboard censusData={census} waterParams={waterParams} healthRecords={healthRecords} incidents={incidents} onSystemReset={handleSystemReset} />}
+        {activeTab === 'census' && <div className=\"space-y-8\"><Census censusData={census} breedingProjects={breedingRecords} onUpdate={(id, qty) => handleDataUpdate(STORAGE_KEYS.CENSUS, setCensus, 'update', undefined, id, { quantity: qty, lastUpdated: new Date().toISOString() } as any)} onInit={(data) => handleDataUpdate(STORAGE_KEYS.CENSUS, setCensus, 'add', data)} /><BreedersModule breeders={breeders} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.BREEDERS, setBreeders, 'add', item)} onDelete={(id) => handleDataUpdate(STORAGE_KEYS.BREEDERS, setBreeders, 'delete', undefined, id)} /></div>}
+        {activeTab === 'water' && <div className=\"space-y-8\"><WaterParameters waterParams={waterParams} breedingProjects={breedingRecords} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.WATER, setWaterParams, 'add', item)} onUpdate={(id, updates) => handleDataUpdate(STORAGE_KEYS.WATER, setWaterParams, 'update', undefined, id, updates)} /><MaintenanceModule maintenanceRecords={maintenanceRecords} breedingProjects={breedingRecords} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.MAINTENANCE, setMaintenanceRecords, 'add', item)} /><FeedingModule feedingRecords={feedingRecords} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.FEEDING, setFeedingRecords, 'add', item)} /></div>}
         {activeTab === 'health' && <Health healthRecords={healthRecords} breeders={breeders} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.HEALTH, setHealthRecords, 'add', item)} onUpdate={(id, updates) => handleDataUpdate(STORAGE_KEYS.HEALTH, setHealthRecords, 'update', undefined, id, updates)} onDelete={(id) => handleDataUpdate(STORAGE_KEYS.HEALTH, setHealthRecords, 'delete', undefined, id)} />}
         {activeTab === 'breeding' && <BreedingModule breedingRecords={breedingRecords} breeders={breeders} censusData={census} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.BREEDING, setBreedingRecords, 'add', item)} onUpdate={(id, updates) => handleDataUpdate(STORAGE_KEYS.BREEDING, setBreedingRecords, 'update', undefined, id, updates)} onUpdateCensus={onUpdateCensus} />}
         {activeTab === 'losses' && <LossesModule losses={losses} censusData={census} breeders={breeders} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.LOSSES, setLosses, 'add', item)} onUpdateCensus={onUpdateCensus} onUpdateBreeder={(id, u) => handleDataUpdate(STORAGE_KEYS.BREEDERS, setBreeders, 'update', undefined, id, u)} />}

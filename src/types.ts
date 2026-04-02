@@ -7,7 +7,8 @@ export type SubgroupType =
   | 'Betta-sorority' 
   | 'Guppys Machos' 
   | 'Guppys Hembras' 
-  | 'Alevines';
+  | 'Alevines Betta'
+  | 'Alevines Guppys';
 
 export interface Breeder {
   id: string;
