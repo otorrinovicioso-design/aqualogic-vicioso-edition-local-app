@@ -35,7 +35,7 @@ export interface CensusSubgroup {
 export interface WaterParameter {
   id: string;
   date: string;
-  subgroup?: SubgroupType;
+  subgroup: SubgroupType;
   ph: number;
   gh: number;
   kh: number;
@@ -56,7 +56,7 @@ export interface HealthEvolution {
 export interface HealthRecord {
   id: string;
   date: string;
-  manualName?: string;
+  manualName: string;
   symptoms: string;
   diagnosis?: string;
   treatment?: string;
