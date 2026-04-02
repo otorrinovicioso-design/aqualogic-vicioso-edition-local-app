@@ -1,16 +1,22 @@
-const STORAGE_PREFIX = 'aqualogic_';
+import { 
+  WaterParameter, 
+  HealthRecord, 
+  Incident, 
+  Breeding, 
+  Maintenance, 
+  Feeding 
+} from '../types';
 
-export const STORAGE_KEYS = {
-  ANIMALS: `${STORAGE_PREFIX}animals`,
-  BREEDERS: `${STORAGE_PREFIX}breeders`,
-  CENSUS: `${STORAGE_PREFIX}census`,
-  WATER: `${STORAGE_PREFIX}water`,
-  HEALTH: `${STORAGE_PREFIX}health`,
-  INCIDENTS: `${STORAGE_PREFIX}incidents`,
-  BREEDING: `${STORAGE_PREFIX}breeding`,
-  MAINTENANCE: `${STORAGE_PREFIX}maintenance`,
-  FEEDING: `${STORAGE_PREFIX}feeding`,
-  LOSSES: `${STORAGE_PREFIX}losses`,
+const STORAGE_KEYS = {
+  BREEDERS: 'aqualogic_breeders',
+  CENSUS: 'aqualogic_census',
+  WATER: 'aqualogic_water',
+  HEALTH: 'aqualogic_health',
+  INCIDENTS: 'aqualogic_incidents',
+  BREEDING: 'aqualogic_breeding',
+  MAINTENANCE: 'aqualogic_maintenance',
+  FEEDING: 'aqualogic_feeding',
+  LOSSES: 'aqualogic_losses'
 };
 
 export const storage = {
@@ -18,14 +24,18 @@ export const storage = {
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : [];
   },
-
+  
   save: <T>(key: string, data: T[]) => {
     localStorage.setItem(key, JSON.stringify(data));
   },
 
-  add: <T extends { id?: string }>(key: string, item: T): T[] => {
+  add: <T extends { id?: string; createdAt?: string | number | Date }>(key: string, item: T): T[] => {
     const current = storage.get<T>(key);
-    const newItem = { ...item, id: item.id || crypto.randomUUID() };
+    const newItem = { 
+      ...item, 
+      id: item.id || Math.random().toString(36).substr(2, 9),
+      createdAt: item.createdAt || new Date().toISOString()
+    };
     const updated = [newItem, ...current];
     storage.save(key, updated);
     return updated;
@@ -45,3 +55,5 @@ export const storage = {
     return updated;
   }
 };
+
+export { STORAGE_KEYS };
