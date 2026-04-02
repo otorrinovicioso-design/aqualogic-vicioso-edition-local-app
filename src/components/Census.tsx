@@ -12,16 +12,16 @@ interface CensusProps {
 const DEFAULT_SUBGROUPS: SubgroupType[] = [
   'Reproductores Masculinos',
   'Reproductores Femeninos',
-  'Beteras recirculadas',
-  'Beta-sorority',
-  'Guppys',
-  'Desoves'
+  'Betteras recirculadas',
+  'Betta-sorority',
+  'Guppys Machos',
+  'Guppys Hembras',
+  'Alevines'
 ];
 
 export const Census: React.FC<CensusProps> = ({ censusData, onUpdate, onInit }) => {
 
   useEffect(() => {
-    // If we're missing any subgroups, initialize them
     const existingTypes = censusData.map(c => c.type);
     DEFAULT_SUBGROUPS.forEach(type => {
       if (!existingTypes.includes(type)) {
@@ -36,10 +36,11 @@ export const Census: React.FC<CensusProps> = ({ censusData, onUpdate, onInit }) 
 
   const getIconForType = (type: SubgroupType) => {
     switch (type) {
-      case 'Desoves': return <Baby size={20} />;
+      case 'Alevines': return <Baby size={20} />;
       case 'Reproductores Masculinos': 
       case 'Reproductores Femeninos': return <Users size={20} />;
-      case 'Guppys': return <Fish size={20} />;
+      case 'Guppys Machos':
+      case 'Guppys Hembras': return <Fish size={20} />;
       default: return <Info size={20} />;
     }
   };
@@ -48,7 +49,7 @@ export const Census: React.FC<CensusProps> = ({ censusData, onUpdate, onInit }) 
     <div className="space-y-6">
       <div>
         <h3 className="text-2xl font-display font-bold text-white">Población General</h3>
-        <p className="text-[10px] text-slate-500 uppercase tracking-widest">Resumen de Inventario por Subgrupos</p>
+        <p className="text-[10px] text-slate-500 uppercase tracking-widest text-white font-bold font-white">Inventario por Subgrupos</p>
       </div>
 
       <div className="grid gap-3">
@@ -63,8 +64,8 @@ export const Census: React.FC<CensusProps> = ({ censusData, onUpdate, onInit }) 
               
               <div className="flex-1 min-w-0">
                 <h4 className="font-bold text-white text-sm truncate">{item.type}</h4>
-                <p className="text-[10px] text-slate-500 uppercase">
-                  Actualizado: {new Date(item.lastUpdated).toLocaleString()}
+                <p className="text-[10px] text-slate-500 uppercase font-bold">
+                  Stock: {item.quantity} ejemplares
                 </p>
               </div>
 
@@ -84,7 +85,6 @@ export const Census: React.FC<CensusProps> = ({ censusData, onUpdate, onInit }) 
                     value={item.quantity} 
                     onChange={(e) => onUpdate(item.id, parseInt(e.target.value) || 0)}
                     className="text-center py-1 px-1 h-8 bg-slate-900 border-white/10"
-                    placeholder="0"
                   />
                 </div>
 
@@ -101,15 +101,6 @@ export const Census: React.FC<CensusProps> = ({ censusData, onUpdate, onInit }) 
           ))
         )}
       </div>
-
-      <Card className="bg-aqua-400/5 border-dashed border-aqua-400/20 p-4">
-        <div className="flex justify-between items-center text-aqua-400">
-          <span className="text-xs uppercase font-bold tracking-widest">Total Individuos</span>
-          <span className="text-xl font-display font-bold">
-            {censusData.reduce((acc, curr) => acc + curr.quantity, 0)}
-          </span>
-        </div>
-      </Card>
     </div>
   );
 };

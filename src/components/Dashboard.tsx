@@ -5,12 +5,11 @@ import {
   AlertTriangle, 
   Droplets, 
   Fish, 
-  LineChart as ChartIcon,
   Activity,
-  ArrowUpRight,
   Target,
   TrendingUp,
-  Calendar
+  Calendar,
+  Layers
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -23,6 +22,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ censusData, waterParams, i
   const latestParams = waterParams[0];
   const activeIncidents = incidents.filter(i => !i.resolved);
   const totalStock = censusData.reduce((acc, curr) => acc + curr.quantity, 0);
+
+  // Grouping for the dashboard
+  const males = censusData.filter(c => c.type.includes('Masculinos') || c.type.includes('Machos') || c.type === 'Betteras recirculadas');
+  const females = censusData.filter(c => c.type.includes('Femeninos') || c.type.includes('Hembras') || c.type === 'Betta-sorority');
+  
+  const totalMales = males.reduce((acc, curr) => acc + curr.quantity, 0);
+  const totalFemales = females.reduce((acc, curr) => acc + curr.quantity, 0);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -37,9 +43,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ censusData, waterParams, i
           </div>
           <div className="flex items-end justify-between">
             <span className="text-3xl font-display font-bold text-white">{totalStock}</span>
-            <div className="flex items-center gap-1 text-aqua-400 text-[10px] bg-aqua-400/10 px-1.5 py-0.5 rounded">
-              <Activity size={10} />
-              <span>Vivo</span>
+            <div className="flex flex-col items-end text-[8px] text-aqua-400 font-bold uppercase tracking-tighter">
+              <span>{totalMales} Machos</span>
+              <span>{totalFemales} Hembras</span>
             </div>
           </div>
         </Card>
@@ -58,25 +64,33 @@ export const Dashboard: React.FC<DashboardProps> = ({ censusData, waterParams, i
         </Card>
       </div>
 
-      {/* Population Summary */}
+      {/* Detailed Stock Distribution */}
       <Card className="p-4 bg-white/5 border border-white/5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Target size={18} className="text-gold-400" />
-            <h3 className="text-xs uppercase font-bold tracking-widest text-white">Resumen de Subgrupos</h3>
+            <Layers size={18} className="text-gold-400" />
+            <h3 className="text-xs uppercase font-bold tracking-widest text-white">Distribución por Sexos</h3>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-2">
-          {censusData.length > 0 ? (
-            censusData.map(item => (
-              <div key={item.id} className="bg-slate-900/50 p-2 rounded-lg border border-white/5 text-center">
-                <p className="text-[7px] text-slate-500 uppercase truncate mb-1">{item.type.split(' ')[0]}</p>
-                <p className="text-lg font-display font-bold text-white">{item.quantity}</p>
-              </div>
-            ))
-          ) : (
-            <div className="col-span-3 text-center py-4 text-slate-600 italic text-[10px]">Cargando inventario...</div>
-          )}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <p className="text-[8px] font-bold text-blue-400 uppercase tracking-widest border-b border-blue-400/20 pb-1">Masculinos / Machos</p>
+            {males.map(item => (
+               <div key={item.id} className="flex justify-between items-center bg-blue-500/5 p-2 rounded border border-blue-500/10">
+                 <span className="text-[9px] text-slate-300 truncate pr-2">{item.type}</span>
+                 <span className="text-xs font-bold text-white">{item.quantity}</span>
+               </div>
+            ))}
+          </div>
+          <div className="space-y-2">
+            <p className="text-[8px] font-bold text-pink-400 uppercase tracking-widest border-b border-pink-400/20 pb-1">Femeninos / Hembras</p>
+            {females.map(item => (
+               <div key={item.id} className="flex justify-between items-center bg-pink-500/5 p-2 rounded border border-pink-500/10">
+                 <span className="text-[9px] text-slate-300 truncate pr-2">{item.type}</span>
+                 <span className="text-xs font-bold text-white">{item.quantity}</span>
+               </div>
+            ))}
+          </div>
         </div>
       </Card>
 
@@ -118,8 +132,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ censusData, waterParams, i
           <p className="text-center text-slate-600 text-[10px] italic py-4 uppercase">No hay lecturas registradas aún.</p>
         )}
       </Card>
-
-      {/* AquaGenius Tip */}
+      
       <div className="glass p-4 rounded-2xl flex items-center gap-4 border border-aqua-400/20">
         <div className="w-10 h-10 rounded-full bg-aqua-400 flex items-center justify-center text-slate-950 shrink-0">
           <TrendingUp size={20} />

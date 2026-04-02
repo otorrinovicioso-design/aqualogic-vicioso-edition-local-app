@@ -10,6 +10,7 @@ export const STORAGE_KEYS = {
   BREEDING: `${STORAGE_PREFIX}breeding`,
   MAINTENANCE: `${STORAGE_PREFIX}maintenance`,
   FEEDING: `${STORAGE_PREFIX}feeding`,
+  LOSSES: `${STORAGE_PREFIX}losses`,
 };
 
 export const storage = {
@@ -18,34 +19,29 @@ export const storage = {
     return data ? JSON.parse(data) : [];
   },
 
-  set: <T>(key: string, data: T[]): void => {
+  save: <T>(key: string, data: T[]) => {
     localStorage.setItem(key, JSON.stringify(data));
   },
 
-  add: <T extends { id: string }>(key: string, item: Partial<T>): T[] => {
+  add: <T extends { id?: string }>(key: string, item: T): T[] => {
     const current = storage.get<T>(key);
-    const newItem = {
-      ...item,
-      id: crypto.randomUUID(),
-    } as T;
+    const newItem = { ...item, id: item.id || crypto.randomUUID() };
     const updated = [newItem, ...current];
-    storage.set(key, updated);
+    storage.save(key, updated);
     return updated;
   },
 
   update: <T extends { id: string }>(key: string, id: string, updates: Partial<T>): T[] => {
     const current = storage.get<T>(key);
-    const updated = current.map((item) => 
-      item.id === id ? { ...item, ...updates } : item
-    );
-    storage.set(key, updated);
+    const updated = current.map(item => item.id === id ? { ...item, ...updates } : item);
+    storage.save(key, updated);
     return updated;
   },
 
   delete: <T extends { id: string }>(key: string, id: string): T[] => {
     const current = storage.get<T>(key);
-    const updated = current.filter((item) => item.id !== id);
-    storage.set(key, updated);
+    const updated = current.filter(item => item.id !== id);
+    storage.save(key, updated);
     return updated;
-  },
+  }
 };
