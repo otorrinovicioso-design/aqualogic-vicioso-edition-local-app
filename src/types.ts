@@ -1,41 +1,26 @@
 export type Species = 'Betta' | 'Guppy' | 'Otro';
-export type AnimalStatus = 'Activo' | 'Baja' | 'Vendido';
-export type MovementType = 'Entrada' | 'Salida' | 'Nacimiento';
-export type MaintenanceType = 'Cambio de Agua' | 'Aditivo' | 'Limpieza' | 'Otro';
-export type Severity = 'Baja' | 'Media' | 'Alta' | 'Crítica';
+export type SubgroupType = 'Reproductores Masculinos' | 'Reproductores Femeninos' | 'Beteras recirculadas' | 'Beta-sorority' | 'Guppys' | 'Desoves';
+export type HealthStatus = 'Tratamiento' | 'Mejorado' | 'Recuperado' | 'Baja';
 
 export interface Animal {
   id: string;
-  species: Species;
   name: string;
-  status: AnimalStatus;
+  species: Species;
+  sex: 'Macho' | 'Hembra';
+  traits: string;
   entryDate: string;
-  birthDate?: string;
-  parents?: string[];
-  traits?: string;
-  ownerId?: string;
+  status: 'Activo' | 'Vendido' | 'Baja';
 }
 
-export interface Movement {
-  id: string;
-  type: MovementType;
-  animalId?: string;
-  date: string;
-  notes?: string;
-  ownerId?: string;
+export interface Breeder extends Animal {
+  provenance: string;
 }
 
-export interface HealthRecord {
+export interface CensusSubgroup {
   id: string;
-  animalId: string;
-  date: string;
-  observations: string;
-  diagnosis?: string;
-  treatment?: string;
-  dosage?: string;
-  duration?: string;
-  result?: string;
-  ownerId?: string;
+  type: SubgroupType;
+  quantity: number;
+  lastUpdated: string;
 }
 
 export interface WaterParameter {
@@ -49,45 +34,17 @@ export interface WaterParameter {
   no3: number;
   temp: number;
   notes?: string;
-  correctiveAction?: string;
-  actionResult?: string;
-  ownerId?: string;
 }
 
-export interface Maintenance {
+export interface HealthRecord {
   id: string;
   date: string;
-  type?: MaintenanceType;
-  task: string;
-  description?: string;
-  volume?: number;
-  additives?: string;
-  additiveName?: string;
-  dosage?: string;
-  ownerId?: string;
-}
-
-export interface Breeding {
-  id: string;
-  startDate: string;
-  pairName: string;
-  maleId: string;
-  femaleId: string;
-  traitsSought?: string;
-  geneticGoals?: string;
-  fryCount?: number;
-  status: string;
-  ownerId?: string;
-}
-
-export interface Feeding {
-  id: string;
-  date: string;
-  foodType: string;
-  amount: string;
-  schedule?: string;
-  notes?: string;
-  ownerId?: string;
+  manualName?: string;
+  symptoms: string;
+  diagnosis?: string;
+  treatment?: string;
+  status?: HealthStatus;
+  observations?: string;
 }
 
 export interface Incident {
@@ -95,9 +52,36 @@ export interface Incident {
   date: string;
   title: string;
   description: string;
-  severity: Severity;
+  severity: 'Baja' | 'Media' | 'Alta' | 'Crítica';
   location: string;
-  status: string;
   resolved: boolean;
-  ownerId?: string;
+}
+
+export interface Breeding {
+  id: string;
+  pairName: string;
+  maleId: string;
+  femaleId: string;
+  startDate: string;
+  fryCount?: number;
+  status: 'Iniciado' | 'Nido' | 'Eclosión' | 'Alevines';
+  geneticGoals: string;
+}
+
+export interface Maintenance {
+  id: string;
+  date: string;
+  task: string;
+  category: string;
+  type: string;
+  volume?: number;
+  description?: string;
+}
+
+export interface Feeding {
+  id: string;
+  date: string;
+  type: string;
+  amount: string;
+  frequency: string;
 }

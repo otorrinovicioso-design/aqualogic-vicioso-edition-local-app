@@ -1,21 +1,15 @@
-import { 
-  Animal, 
-  WaterParameter, 
-  HealthRecord, 
-  Incident, 
-  Breeding, 
-  Maintenance, 
-  Feeding 
-} from '../types';
+const STORAGE_PREFIX = 'aqualogic_';
 
-const STORAGE_KEYS = {
-  ANIMALS: 'aqualogic_animals',
-  WATER: 'aqualogic_water',
-  HEALTH: 'aqualogic_health',
-  INCIDENTS: 'aqualogic_incidents',
-  BREEDING: 'aqualogic_breeding',
-  MAINTENANCE: 'aqualogic_maintenance',
-  FEEDING: 'aqualogic_feeding'
+export const STORAGE_KEYS = {
+  ANIMALS: `${STORAGE_PREFIX}animals`,
+  BREEDERS: `${STORAGE_PREFIX}breeders`,
+  CENSUS: `${STORAGE_PREFIX}census`,
+  WATER: `${STORAGE_PREFIX}water`,
+  HEALTH: `${STORAGE_PREFIX}health`,
+  INCIDENTS: `${STORAGE_PREFIX}incidents`,
+  BREEDING: `${STORAGE_PREFIX}breeding`,
+  MAINTENANCE: `${STORAGE_PREFIX}maintenance`,
+  FEEDING: `${STORAGE_PREFIX}feeding`,
 };
 
 export const storage = {
@@ -23,36 +17,35 @@ export const storage = {
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : [];
   },
-  
-  save: <T>(key: string, data: T[]) => {
+
+  set: <T>(key: string, data: T[]): void => {
     localStorage.setItem(key, JSON.stringify(data));
   },
 
-  add: <T extends { id?: string; createdAt?: string | number | Date }>(key: string, item: T): T[] => {
+  add: <T extends { id: string }>(key: string, item: Partial<T>): T[] => {
     const current = storage.get<T>(key);
-    const newItem = { 
-      ...item, 
-      id: item.id || Math.random().toString(36).substr(2, 9),
-      createdAt: item.createdAt || new Date().toISOString()
-    };
+    const newItem = {
+      ...item,
+      id: crypto.randomUUID(),
+    } as T;
     const updated = [newItem, ...current];
-    storage.save(key, updated);
+    storage.set(key, updated);
     return updated;
   },
 
   update: <T extends { id: string }>(key: string, id: string, updates: Partial<T>): T[] => {
     const current = storage.get<T>(key);
-    const updated = current.map(item => item.id === id ? { ...item, ...updates } : item);
-    storage.save(key, updated);
+    const updated = current.map((item) => 
+      item.id === id ? { ...item, ...updates } : item
+    );
+    storage.set(key, updated);
     return updated;
   },
 
   delete: <T extends { id: string }>(key: string, id: string): T[] => {
     const current = storage.get<T>(key);
-    const updated = current.filter(item => item.id !== id);
-    storage.save(key, updated);
+    const updated = current.filter((item) => item.id !== id);
+    storage.set(key, updated);
     return updated;
-  }
+  },
 };
-
-export { STORAGE_KEYS };

@@ -1,118 +1,133 @@
 import React from 'react';
-import { 
-  Fish, 
-  Droplets, 
-  AlertTriangle, 
-  Activity, 
-  Calendar,
-  TrendingUp,
-  HeartPulse,
-  Wrench
-} from 'lucide-react';
+import { WaterParameter, Incident, CensusSubgroup } from '../types';
 import { Card } from './UI';
-import { Animal, WaterParameter, Incident } from '../types';
+import { 
+  AlertTriangle, 
+  Droplets, 
+  Fish, 
+  LineChart as ChartIcon,
+  Activity,
+  ArrowUpRight,
+  Target,
+  TrendingUp,
+  Calendar
+} from 'lucide-react';
 
 interface DashboardProps {
-  animals: Animal[];
+  censusData: CensusSubgroup[];
   waterParams: WaterParameter[];
   incidents: Incident[];
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ animals, waterParams, incidents }) => {
-  const activeIncidents = incidents.filter(i => i.status === 'Abierto');
+export const Dashboard: React.FC<DashboardProps> = ({ censusData, waterParams, incidents }) => {
   const latestParams = waterParams[0];
+  const activeIncidents = incidents.filter(i => !i.resolved);
+  const totalStock = censusData.reduce((acc, curr) => acc + curr.quantity, 0);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
+      {/* Header Stat Cards */}
       <div className="grid grid-cols-2 gap-4">
-        <Card variant="aqua" className="relative overflow-hidden group">
-          <Fish className="mb-4 text-aqua-400 group-hover:scale-110 transition-transform" size={24} />
-          <p className="text-3xl font-display font-bold text-white">{animals.length}</p>
-          <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Ejemplares</p>
-          <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
-            <Fish size={80} />
+        <Card className="bg-aqua-400/10 border-aqua-400/20 p-4 flex flex-col justify-between h-32">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-aqua-400/20 flex items-center justify-center text-aqua-400">
+              <Fish size={20} />
+            </div>
+            <span className="text-[10px] text-aqua-400 uppercase font-bold tracking-widest">Stock Total</span>
+          </div>
+          <div className="flex items-end justify-between">
+            <span className="text-3xl font-display font-bold text-white">{totalStock}</span>
+            <div className="flex items-center gap-1 text-aqua-400 text-[10px] bg-aqua-400/10 px-1.5 py-0.5 rounded">
+              <Activity size={10} />
+              <span>Vivo</span>
+            </div>
           </div>
         </Card>
 
-        <Card variant="gold" className="relative overflow-hidden group">
-          <AlertTriangle className="mb-4 text-gold-500 group-hover:scale-110 transition-transform" size={24} />
-          <p className="text-3xl font-display font-bold text-white">{activeIncidents.length}</p>
-          <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Alertas Activas</p>
-          <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
-            <AlertTriangle size={80} />
+        <Card className="bg-red-500/10 border-red-500/20 p-4 flex flex-col justify-between h-32">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center text-red-400">
+              <AlertTriangle size={20} />
+            </div>
+            <span className="text-[10px] text-red-400 uppercase font-bold tracking-widest">Alertas</span>
+          </div>
+          <div className="flex items-end justify-between">
+            <span className="text-3xl font-display font-bold text-white">{activeIncidents.length}</span>
+            <span className="text-[10px] text-red-400/70 italic uppercase tracking-tighter">Activas</span>
           </div>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <TrendingUp size={16} className="text-aqua-400" />
-              Últimos Parámetros
-            </h4>
-            {latestParams && (
-              <span className="text-[10px] text-slate-500">
-                {new Date(latestParams.date).toLocaleDateString()}
-              </span>
-            )}
+      {/* Population Summary */}
+      <Card className="p-4 bg-white/5 border border-white/5">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Target size={18} className="text-gold-400" />
+            <h3 className="text-xs uppercase font-bold tracking-widest text-white">Resumen de Subgrupos</h3>
           </div>
-          
-          {latestParams ? (
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div className="bg-white/5 p-3 rounded-2xl border border-white/5">
-                <p className="text-[10px] text-slate-500 uppercase mb-1">PH</p>
-                <p className="text-xl font-display font-bold text-aqua-400">{latestParams.ph}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {censusData.length > 0 ? (
+            censusData.map(item => (
+              <div key={item.id} className="bg-slate-900/50 p-2 rounded-lg border border-white/5 text-center">
+                <p className="text-[7px] text-slate-500 uppercase truncate mb-1">{item.type.split(' ')[0]}</p>
+                <p className="text-lg font-display font-bold text-white">{item.quantity}</p>
               </div>
-              <div className="bg-white/5 p-3 rounded-2xl border border-white/5">
-                <p className="text-[10px] text-slate-500 uppercase mb-1">Temp</p>
-                <p className="text-xl font-display font-bold text-gold-500">{latestParams.temp}°C</p>
-              </div>
-              <div className="bg-white/5 p-3 rounded-2xl border border-white/5">
-                <p className="text-[10px] text-slate-500 uppercase mb-1">NO3</p>
-                <p className="text-xl font-display font-bold text-red-400">{latestParams.no3}</p>
-              </div>
-              <div className="bg-white/5 p-3 rounded-2xl border border-white/5">
-                <p className="text-[10px] text-slate-500 uppercase mb-1">NH3</p>
-                <p className="text-xl font-display font-bold text-emerald-400">{latestParams.nh3}</p>
-              </div>
-            </div>
+            ))
           ) : (
-            <div className="py-8 text-center text-slate-500 text-xs italic">
-              No hay registros de parámetros aún.
-            </div>
+            <div className="col-span-3 text-center py-4 text-slate-600 italic text-[10px]">Cargando inventario...</div>
           )}
-        </Card>
+        </div>
+      </Card>
 
-        <Card className="space-y-4">
-          <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-            <Activity size={16} className="text-gold-500" />
-            Estado del Sistema
-          </h4>
-          <div className="space-y-3 pt-2">
-            <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
-              <div className="flex items-center gap-3">
-                <HeartPulse size={14} className="text-red-400" />
-                <span className="text-xs text-slate-300">Salud General</span>
-              </div>
-              <span className="text-[10px] font-bold text-emerald-400 uppercase">Óptimo</span>
+      {/* Water Stats Snapshot */}
+      <Card className="p-4 bg-white/5 border border-white/5">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-aqua-400/10 rounded-xl text-aqua-400">
+              <Droplets size={20} />
             </div>
-            <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
-              <div className="flex items-center gap-3">
-                <Wrench size={14} className="text-aqua-400" />
-                <span className="text-xs text-slate-300">Rutinas Mantenimiento</span>
-              </div>
-              <span className="text-[10px] font-bold text-gold-500 uppercase">Al día</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Último Análisis</span>
+          </div>
+          <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase">
+            <Calendar size={12} />
+            {latestParams?.date ? new Date(latestParams.date).toLocaleDateString() : 'Sin datos'}
+          </div>
+        </div>
+        
+        {latestParams ? (
+          <div className="grid grid-cols-4 gap-4">
+            <div className="text-center">
+              <p className="text-[8px] text-slate-500 uppercase mb-1">pH</p>
+              <p className="text-lg font-bold text-aqua-400">{latestParams.ph}</p>
             </div>
-            <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
-              <div className="flex items-center gap-3">
-                <Calendar size={14} className="text-slate-400" />
-                <span className="text-xs text-slate-300">Próxima Limpieza</span>
-              </div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Mañana</span>
+            <div className="text-center">
+              <p className="text-[8px] text-slate-500 uppercase mb-1">Temp</p>
+              <p className="text-lg font-bold text-gold-500">{latestParams.temp}°</p>
+            </div>
+            <div className="text-center">
+              <p className="text-[8px] text-slate-500 uppercase mb-1">NH3</p>
+              <p className={`text-lg font-bold ${latestParams.nh3 > 0 ? 'text-red-500' : 'text-slate-300'}`}>{latestParams.nh3}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-[8px] text-slate-500 uppercase mb-1">NO3</p>
+              <p className="text-lg font-bold text-orange-400">{latestParams.no3}</p>
             </div>
           </div>
-        </Card>
+        ) : (
+          <p className="text-center text-slate-600 text-[10px] italic py-4 uppercase">No hay lecturas registradas aún.</p>
+        )}
+      </Card>
+
+      {/* AquaGenius Tip */}
+      <div className="glass p-4 rounded-2xl flex items-center gap-4 border border-aqua-400/20">
+        <div className="w-10 h-10 rounded-full bg-aqua-400 flex items-center justify-center text-slate-950 shrink-0">
+          <TrendingUp size={20} />
+        </div>
+        <div>
+          <p className="text-xs font-bold text-white">AquaGenius Tip</p>
+          <p className="text-[10px] text-slate-400 italic">Manten los nitratos por debajo de 20ppm para una coloración óptima.</p>
+        </div>
       </div>
     </div>
   );

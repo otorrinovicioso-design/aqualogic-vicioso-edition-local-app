@@ -5,13 +5,15 @@ import { Census } from './components/Census';
 import { WaterParameters } from './components/WaterParameters';
 import { Health } from './components/Health';
 import { BreedingModule } from './components/BreedingModule';
+import { BreedersModule } from './components/BreedersModule';
 import { Incidents } from './components/Incidents';
 import { MaintenanceModule } from './components/MaintenanceModule';
 import { FeedingModule } from './components/FeedingModule';
-import { AquaGenius } from './components/AquaGenius';
 import { storage, STORAGE_KEYS } from './services/storage';
 import { 
   Animal, 
+  Breeder,
+  CensusSubgroup,
   WaterParameter, 
   HealthRecord, 
   Incident, 
@@ -19,16 +21,16 @@ import {
   Maintenance, 
   Feeding 
 } from './types';
-import { Fish, Sparkles } from 'lucide-react';
-import { Button } from './components/UI';
+import { Fish } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [loading, setLoading] = useState(true);
-  const [showAI, setShowAI] = useState(false);
 
   // Data State
   const [animals, setAnimals] = useState<Animal[]>([]);
+  const [breeders, setBreeders] = useState<Breeder[]>([]);
+  const [census, setCensus] = useState<CensusSubgroup[]>([]);
   const [waterParams, setWaterParams] = useState<WaterParameter[]>([]);
   const [healthRecords, setHealthRecords] = useState<HealthRecord[]>([]);
   const [incidents, setIncidents] = useState<Incident[]>([]);
@@ -39,6 +41,8 @@ export default function App() {
   useEffect(() => {
     // Load initial data from LocalStorage
     setAnimals(storage.get<Animal>(STORAGE_KEYS.ANIMALS));
+    setBreeders(storage.get<Breeder>(STORAGE_KEYS.BREEDERS));
+    setCensus(storage.get<CensusSubgroup>(STORAGE_KEYS.CENSUS));
     setWaterParams(storage.get<WaterParameter>(STORAGE_KEYS.WATER));
     setHealthRecords(storage.get<HealthRecord>(STORAGE_KEYS.HEALTH));
     setIncidents(storage.get<Incident>(STORAGE_KEYS.INCIDENTS));
@@ -49,6 +53,7 @@ export default function App() {
     setLoading(false);
   }, []);
 
+  // Generic handlers for local storage and state update
   const handleDataUpdate = <T extends { id: string }>(
     key: string, 
     setter: React.Dispatch<React.SetStateAction<T[]>>, 
@@ -82,27 +87,31 @@ export default function App() {
   }
 
   const renderContent = () => {
-    if (showAI) {
-      return <AquaGenius context={{ animals, waterParams, healthRecords, incidents }} />;
-    }
-
     switch (activeTab) {
       case 'home':
-        return <Dashboard animals={animals} waterParams={waterParams} incidents={incidents} />;
+        return <Dashboard censusData={census} waterParams={waterParams} incidents={incidents} />;
       case 'census':
         return (
-          <Census 
-            animals={animals} 
-            onAdd={(item) => handleDataUpdate(STORAGE_KEYS.ANIMALS, setAnimals, 'add', item)}
-            onDelete={(id) => handleDataUpdate(STORAGE_KEYS.ANIMALS, setAnimals, 'delete', undefined, id)}
-          />
+          <div className="space-y-8">
+            <Census 
+              censusData={census} 
+              onUpdate={(id, qty) => handleDataUpdate(STORAGE_KEYS.CENSUS, setCensus, 'update', undefined, id, { quantity: qty, lastUpdated: new Date().toISOString() } as any)}
+              onInit={(data) => handleDataUpdate(STORAGE_KEYS.CENSUS, setCensus, 'add', data)}
+            />
+            <BreedersModule 
+              breeders={breeders}
+              onAdd={(item) => handleDataUpdate(STORAGE_KEYS.BREEDERS, setBreeders, 'add', item)}
+              onDelete={(id) => handleDataUpdate(STORAGE_KEYS.BREEDERS, setBreeders, 'delete', undefined, id)}
+            />
+          </div>
         );
       case 'water':
         return (
-          <div className="space-y-8 pb-10">
+          <div className="space-y-8">
             <WaterParameters 
               waterParams={waterParams} 
               onAdd={(item) => handleDataUpdate(STORAGE_KEYS.WATER, setWaterParams, 'add', item)}
+              onUpdate={(id, updates) => handleDataUpdate(STORAGE_KEYS.WATER, setWaterParams, 'update', undefined, id, updates)}
             />
             <MaintenanceModule 
               maintenanceRecords={maintenanceRecords} 
@@ -115,43 +124,43 @@ export default function App() {
           </div>
         );
       case 'health':
-        return <Health healthRecords={healthRecords} animals={animals} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.HEALTH, setHealthRecords, 'add', item)} />;
+        return (
+          <Health 
+            healthRecords={healthRecords} 
+            breeders={breeders} 
+            onAdd={(item) => handleDataUpdate(STORAGE_KEYS.HEALTH, setHealthRecords, 'add', item)}
+            onUpdate={(id, updates) => handleDataUpdate(STORAGE_KEYS.HEALTH, setHealthRecords, 'update', undefined, id, updates)}
+          />
+        );
       case 'breeding':
-        return <BreedingModule breedingRecords={breedingRecords} animals={animals} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.BREEDING, setBreedingRecords, 'add', item)} />;
+        return (
+          <BreedingModule 
+            breedingRecords={breedingRecords} 
+            breeders={breeders} 
+            onAdd={(item) => handleDataUpdate(STORAGE_KEYS.BREEDING, setBreedingRecords, 'add', item)} 
+          />
+        );
       case 'incidents':
         return <Incidents incidents={incidents} onAdd={(item) => handleDataUpdate(STORAGE_KEYS.INCIDENTS, setIncidents, 'add', item)} />;
       default:
-        return <Dashboard animals={animals} waterParams={waterParams} incidents={incidents} />;
+        return <Dashboard censusData={census} waterParams={waterParams} incidents={incidents} />;
     }
   };
 
   return (
-    <div className="min-h-screen pb-32 bg-slate-950 text-slate-100 overflow-x-hidden font-sans">
+    <div className="min-h-screen pb-24 bg-slate-950 text-slate-100">
       <header className="p-4 flex justify-between items-center glass sticky top-0 z-40">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-aqua-400/10 rounded-2xl flex items-center justify-center text-aqua-400">
-            <Fish size={24} />
-          </div>
-          <div>
-            <h2 className="text-lg font-display font-bold text-white leading-none">AquaLogic</h2>
-            <p className="text-[9px] text-slate-500 uppercase tracking-widest mt-1">Vicioso Edition • Local</p>
-          </div>
+        <div>
+          <h2 className="text-xl font-display font-bold text-aqua-400">AquaLogic</h2>
+          <p className="text-[10px] text-slate-500 uppercase tracking-widest">Vicioso Edition • Local Mode</p>
         </div>
-        <Button 
-          variant={showAI ? 'secondary' : 'ghost'} 
-          size="sm" 
-          onClick={() => setShowAI(!showAI)}
-          className="rounded-full w-10 h-10 p-0"
-        >
-          <Sparkles size={18} className={showAI ? 'text-slate-950' : 'text-gold-500'} />
-        </Button>
       </header>
 
-      <main className="p-4 max-w-4xl mx-auto w-full">
+      <main className="p-4 max-w-4xl mx-auto">
         {renderContent()}
       </main>
 
-      <BottomNav activeTab={activeTab} setActiveTab={(tab) => { setActiveTab(tab); setShowAI(false); }} />
+      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
 }
