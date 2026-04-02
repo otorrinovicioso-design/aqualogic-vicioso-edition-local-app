@@ -54,18 +54,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ censusData = [], waterPara
   const activeIncidents = (incidents || []).filter(i => !i.resolved);
   
   // SMART ALERTS LOGIC (Refined for HolaPez)
-  const waterAlerts = latestParams ? (
-    (latestParams.ph && (latestParams.ph < 6.5 || latestParams.ph > 8.5)) ||
-    (latestParams.no2 && latestParams.no2 > 0.1) || // Más sensible
-    (latestParams.nh3 && latestParams.nh3 > 0)
-  ) : false;
+  const waterAlertsCount = latestParams ? (
+    ((latestParams.ph && (latestParams.ph < 6.5 || latestParams.ph > 8.5)) ? 1 : 0) +
+    ((latestParams.no2 && latestParams.no2 > 0.1) ? 1 : 0) +
+    ((latestParams.nh3 && latestParams.nh3 > 0) ? 1 : 0)
+  ) : 0;
 
-  // FIX: Matching v3.0 status 'Tratamiento' or 'Mejorado'
   const sickCount = (healthRecords || []).filter((h: any) => 
     h.status === 'Tratamiento' || h.status === 'Mejorado'
   ).length;
 
-  const totalAlertsCount = activeIncidents.length + sickCount + (waterAlerts ? 1 : 0);
+  const totalAlertsCount = activeIncidents.length + sickCount + (waterAlertsCount > 0 ? 1 : 0);
 
   const filteredCensus = (censusData || []).filter(c => VALID_SUBGROUPS.includes(c.type));
   const totalStock = filteredCensus.reduce((acc, curr) => acc + (curr.quantity || 0), 0);
@@ -109,7 +108,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ censusData = [], waterPara
         </Card>
         <Card className={cn("p-4 h-32 flex flex-col justify-between border transition-all", totalAlertsCount > 0 ? "bg-red-500/10 border-red-500/20 shadow-lg shadow-red-500/5" : "bg-white/5 border-white/10")}>
            <div className="flex items-center gap-3"><div className={cn("w-8 h-8 rounded-lg flex items-center justify-center font-bold", totalAlertsCount > 0 ? "bg-red-500 text-slate-950 shadow-lg" : "bg-white/10 text-slate-700")}><AlertTriangle size={20} /></div><span className={cn("text-[10px] font-bold uppercase tracking-widest", totalAlertsCount > 0 ? "text-red-500 font-black" : "text-white/50")}>ALERTAS</span></div>
-           <div className="flex items-end justify-between"><div className="flex flex-col"><span className="text-3xl font-display font-bold text-white tracking-widest">{totalAlertsCount}</span><span className="text-[9px] text-slate-700 font-bold uppercase tracking-widest">CASOS</span></div>{totalAlertsCount === 0 && <span className="text-[10px] text-emerald-500 font-bold italic tracking-widest uppercase font-white uppercase">OK</span>}</div>
+           <div className="flex items-end justify-between">
+              <div className="flex flex-col">
+                <span className="text-3xl font-display font-bold text-white tracking-widest">{totalAlertsCount}</span>
+                <div className="flex flex-col -mt-1">
+                   <span className="text-[9px] text-slate-700 font-bold uppercase tracking-widest">CASOS</span>
+                   {sickCount > 0 && <span className="text-[8px] text-red-500 font-black uppercase whitespace-nowrap">{sickCount} ENFERMO{sickCount > 1 ? 'S' : ''}</span>}
+                   {waterAlertsCount > 0 && <span className="text-[8px] text-orange-400 font-black uppercase whitespace-nowrap">AGUA CRÍTICA</span>}
+                </div>
+              </div>
+              {totalAlertsCount === 0 && <span className="text-[10px] text-emerald-500 font-bold italic tracking-widest uppercase font-white uppercase">OK</span>}
+           </div>
         </Card>
       </div>
 
