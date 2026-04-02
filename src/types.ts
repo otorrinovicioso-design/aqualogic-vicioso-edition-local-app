@@ -7,7 +7,9 @@ export type SubgroupType =
   | 'Betta-sorority' 
   | 'Guppys Machos' 
   | 'Guppys Hembras' 
-  | 'Alevines';
+  | 'Alevines'
+  | 'Desoves'
+  | string; 
 
 export type HealthStatus = 'Tratamiento' | 'Mejorado' | 'Alta' | 'Baja';
 
@@ -35,14 +37,14 @@ export interface CensusSubgroup {
 export interface WaterParameter {
   id: string;
   date: string;
-  subgroup: SubgroupType;
-  ph: number;
-  gh: number;
-  kh: number;
-  nh3: number;
-  no2: number;
-  no3: number;
-  temp: number;
+  subgroup: string;
+  ph?: number; // Opcionales
+  gh?: number;
+  kh?: number;
+  nh3?: number;
+  no2?: number;
+  no3?: number;
+  temp?: number;
   notes?: string;
 }
 
@@ -93,8 +95,9 @@ export interface Loss {
   id: string;
   date: string;
   quantity: number;
-  subgroup: SubgroupType;
+  subgroup: string;
   type: 'Muerte' | 'Venta';
+  breederId?: string;
   reason?: string;
 }
 
@@ -104,7 +107,7 @@ export interface Maintenance {
   task: string;
   category: string;
   type: string;
-  volume?: number;
+  volume?: number | string;
   description?: string;
 }
 
