@@ -53,14 +53,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ censusData = [], waterPara
   const latestParams = (waterParams && waterParams.length > 0) ? waterParams[0] : null;
   const activeIncidents = (incidents || []).filter(i => !i.resolved);
   
-  // SMART ALERTS LOGIC
+  // SMART ALERTS LOGIC (Refined for HolaPez)
   const waterAlerts = latestParams ? (
     (latestParams.ph && (latestParams.ph < 6.5 || latestParams.ph > 8.5)) ||
-    (latestParams.no2 && latestParams.no2 > 0.25) ||
+    (latestParams.no2 && latestParams.no2 > 0.1) || // Más sensible
     (latestParams.nh3 && latestParams.nh3 > 0)
   ) : false;
 
-  const sickCount = (healthRecords || []).filter((h: any) => h.status === 'treating').length;
+  // FIX: Matching v3.0 status 'Tratamiento' or 'Mejorado'
+  const sickCount = (healthRecords || []).filter((h: any) => 
+    h.status === 'Tratamiento' || h.status === 'Mejorado'
+  ).length;
+
   const totalAlertsCount = activeIncidents.length + sickCount + (waterAlerts ? 1 : 0);
 
   const filteredCensus = (censusData || []).filter(c => VALID_SUBGROUPS.includes(c.type));
