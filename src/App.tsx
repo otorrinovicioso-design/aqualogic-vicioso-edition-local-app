@@ -6,12 +6,12 @@ import { WaterParameters } from './components/WaterParameters';
 import { Health } from './components/Health';
 import { BreedingModule } from './components/BreedingModule';
 import { BreedersModule } from './components/BreedersModule';
+import { LossesModule } from './components/LossesModule';
 import { Incidents } from './components/Incidents';
 import { MaintenanceModule } from './components/MaintenanceModule';
 import { FeedingModule } from './components/FeedingModule';
 import { storage, STORAGE_KEYS } from './services/storage';
 import { 
-  Animal, 
   Breeder,
   CensusSubgroup,
   WaterParameter, 
@@ -19,7 +19,9 @@ import {
   Incident, 
   Breeding, 
   Maintenance, 
-  Feeding 
+  Feeding,
+  Loss,
+  SubgroupType
 } from './types';
 import { Fish } from 'lucide-react';
 
@@ -28,7 +30,6 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   // Data State
-  const [animals, setAnimals] = useState<Animal[]>([]);
   const [breeders, setBreeders] = useState<Breeder[]>([]);
   const [census, setCensus] = useState<CensusSubgroup[]>([]);
   const [waterParams, setWaterParams] = useState<WaterParameter[]>([]);
@@ -37,10 +38,10 @@ export default function App() {
   const [breedingRecords, setBreedingRecords] = useState<Breeding[]>([]);
   const [maintenanceRecords, setMaintenanceRecords] = useState<Maintenance[]>([]);
   const [feedingRecords, setFeedingRecords] = useState<Feeding[]>([]);
+  const [losses, setLosses] = useState<Loss[]>([]);
 
   useEffect(() => {
     // Load initial data from LocalStorage
-    setAnimals(storage.get<Animal>(STORAGE_KEYS.ANIMALS));
     setBreeders(storage.get<Breeder>(STORAGE_KEYS.BREEDERS));
     setCensus(storage.get<CensusSubgroup>(STORAGE_KEYS.CENSUS));
     setWaterParams(storage.get<WaterParameter>(STORAGE_KEYS.WATER));
@@ -49,6 +50,7 @@ export default function App() {
     setBreedingRecords(storage.get<Breeding>(STORAGE_KEYS.BREEDING));
     setMaintenanceRecords(storage.get<Maintenance>(STORAGE_KEYS.MAINTENANCE));
     setFeedingRecords(storage.get<Feeding>(STORAGE_KEYS.FEEDING));
+    setLosses(storage.get<Loss>(STORAGE_KEYS.LOSSES));
     
     setLoading(false);
   }, []);
@@ -71,6 +73,21 @@ export default function App() {
       updated = storage.delete<T>(key, id);
     }
     setter(updated);
+  };
+
+  // Cross-module update for census
+  const onUpdateCensus = (type: SubgroupType, delta: number) => {
+    const subgroup = census.find(c => c.type === type);
+    if (subgroup) {
+      handleDataUpdate(
+        STORAGE_KEYS.CENSUS, 
+        setCensus, 
+        'update', 
+        undefined, 
+        subgroup.id, 
+        { quantity: subgroup.quantity + delta, lastUpdated: new Date().toISOString() } as any
+      );
+    }
   };
 
   if (loading) {
@@ -137,7 +154,19 @@ export default function App() {
           <BreedingModule 
             breedingRecords={breedingRecords} 
             breeders={breeders} 
+            censusData={census}
             onAdd={(item) => handleDataUpdate(STORAGE_KEYS.BREEDING, setBreedingRecords, 'add', item)} 
+            onUpdate={(id, updates) => handleDataUpdate(STORAGE_KEYS.BREEDING, setBreedingRecords, 'update', undefined, id, updates)}
+            onUpdateCensus={onUpdateCensus}
+          />
+        );
+      case 'losses':
+        return (
+          <LossesModule 
+            losses={losses}
+            censusData={census}
+            onAdd={(item) => handleDataUpdate(STORAGE_KEYS.LOSSES, setLosses, 'add', item)}
+            onUpdateCensus={onUpdateCensus}
           />
         );
       case 'incidents':
@@ -148,11 +177,11 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen pb-24 bg-slate-950 text-slate-100">
+    <div className="min-h-screen pb-24 bg-slate-950 text-slate-100 font-sans">
       <header className="p-4 flex justify-between items-center glass sticky top-0 z-40">
         <div>
           <h2 className="text-xl font-display font-bold text-aqua-400">AquaLogic</h2>
-          <p className="text-[10px] text-slate-500 uppercase tracking-widest">Vicioso Edition • Local Mode</p>
+          <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold font-white">Vicioso Edition • Cloud Active</p>
         </div>
       </header>
 
