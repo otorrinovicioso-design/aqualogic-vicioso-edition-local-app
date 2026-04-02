@@ -7,24 +7,19 @@ export type SubgroupType =
   | 'Betta-sorority' 
   | 'Guppys Machos' 
   | 'Guppys Hembras' 
-  | 'Alevines'
-  | 'Desoves'
-  | string; 
+  | 'Alevines';
 
-export type HealthStatus = 'Tratamiento' | 'Mejorado' | 'Alta' | 'Baja';
-
-export interface Animal {
+export interface Breeder {
   id: string;
   name: string;
   species: Species;
-  sex: 'Macho' | 'Hembra';
-  traits: string;
-  entryDate: string;
-  status: 'Activo' | 'Vendido' | 'Baja';
-}
-
-export interface Breeder extends Animal {
-  provenance: string;
+  sex: 'M' | 'H';
+  variety: string;
+  source: string;
+  importDate: string;
+  notes?: string;
+  status: 'active' | 'retired' | 'deceased';
+  image?: string;
 }
 
 export interface CensusSubgroup {
@@ -32,13 +27,14 @@ export interface CensusSubgroup {
   type: SubgroupType;
   quantity: number;
   lastUpdated: string;
+  notes?: string;
 }
 
 export interface WaterParameter {
   id: string;
   date: string;
-  subgroup: string;
-  ph?: number; // Opcionales
+  subgroup?: string;
+  ph?: number;
   gh?: number;
   kh?: number;
   nh3?: number;
@@ -48,57 +44,40 @@ export interface WaterParameter {
   notes?: string;
 }
 
-export interface HealthEvolution {
-  id: string;
-  date: string;
-  note: string;
-  status: HealthStatus;
-}
-
 export interface HealthRecord {
   id: string;
   date: string;
-  manualName: string;
+  breederId?: string;
+  subgroup?: string;
   symptoms: string;
   diagnosis?: string;
-  treatment?: string;
-  status: HealthStatus;
-  evolutions: HealthEvolution[];
-  observations?: string;
-}
-
-export interface Breeding {
-  id: string;
-  pairName: string;
-  maleId: string;
-  femaleId: string;
-  startDate: string;
-  spawnDate?: string;
-  fryCount?: number;
-  status: 'Iniciado' | 'Nido' | 'Eclosión' | 'Alevines' | 'Terminado'; 
-  geneticGoals: string;
-  isFinished: boolean;
-  finishDate?: string;
+  treatment: string;
+  status: 'treating' | 'recovered' | 'deceased';
+  notes?: string;
 }
 
 export interface Incident {
   id: string;
   date: string;
-  title: string;
+  type: 'equipment' | 'parameter' | 'health' | 'other';
+  severity: 'low' | 'medium' | 'high';
   description: string;
-  severity: 'Baja' | 'Media' | 'Alta' | 'Crítica';
-  location: string;
   resolved: boolean;
+  resolutionDate?: string;
 }
 
-export interface Loss {
+export interface Breeding {
   id: string;
-  date: string;
-  quantity: number;
-  subgroup: string;
-  type: 'Muerte' | 'Venta';
-  breederId?: string;
-  reason?: string;
+  startDate: string;
+  maleId: string;
+  femaleId: string;
+  pairName: string;
+  status: 'pairing' | 'spawned' | 'hatching' | 'growing' | 'finished';
+  spawnDate?: string;
+  hatchDate?: string;
+  fryCount?: number;
+  isFinished: boolean;
+  notes?: string;
 }
 
 export interface Maintenance {
@@ -107,7 +86,7 @@ export interface Maintenance {
   task: string;
   category: string;
   type: string;
-  volume?: number | string;
+  volume?: string;
   description?: string;
 }
 
@@ -115,6 +94,18 @@ export interface Feeding {
   id: string;
   date: string;
   type: string;
-  amount: string;
-  frequency: string;
+  food: string;
+  amount?: string;
+  notes?: string;
+}
+
+export interface Loss {
+  id: string;
+  date: string;
+  type: 'breeder' | 'fry' | 'census';
+  entityId?: string;
+  entityName: string;
+  count: number;
+  reason: string;
+  notes?: string;
 }
