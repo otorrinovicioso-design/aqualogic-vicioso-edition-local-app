@@ -32,8 +32,9 @@ export const BreedingModule: React.FC<BreedingModuleProps> = ({
     spawnDate: ''
   });
 
-  const males = breeders.filter(b => b.species === 'Betta' && b.sex === 'M' && b.status === 'active');
-  const females = breeders.filter(b => b.species === 'Betta' && b.sex === 'H' && b.status === 'active');
+  // FIX: Matching BreedersModule.tsx storage keys (Macho/Hembra/Activo)
+  const males = breeders.filter(b => b.species === 'Betta' && b.sex === 'Macho' && b.status === 'Activo');
+  const females = breeders.filter(b => b.species === 'Betta' && b.sex === 'Hembra' && b.status === 'Activo');
 
   const activeProjects = breedingRecords.filter(r => !r.isFinished);
   const finishedProjects = breedingRecords.filter(r => r.isFinished);
