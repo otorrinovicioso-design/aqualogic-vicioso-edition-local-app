@@ -95,12 +95,12 @@ export const MaintenanceModule: React.FC<MaintenanceModuleProps> = ({ maintenanc
 
       <div className="space-y-4">
         {weekLabels.map((label, idx) => {
-          const isExpanded = idx === 0 || expandedWeeks.includes(label);
+          const isExpanded = expandedWeeks.includes(label);
           const { records } = grouped[label];
           return (
             <div key={label} className="space-y-2">
-              <button onClick={() => setExpandedWeeks(prev => prev.includes(label) ? prev.filter(l => l !== label) : [...prev, label])} className={cn("w-full flex justify-between items-center px-4 py-2 rounded-xl border transition-all text-white", idx === 0 ? "bg-white/10 border-white/10" : "bg-white/5 border-white/5 opacity-50")}>
-                <div className="flex items-center gap-3"><History size={16} className={idx === 0 ? "text-aqua-400" : "text-slate-600"} /><span className="text-[10px] font-black uppercase tracking-widest font-white">{label}</span><span className="text-[8px] bg-white/5 px-2 py-0.5 rounded-full text-slate-500 font-bold">{records.length} Tareas</span></div>
+              <button onClick={() => setExpandedWeeks(prev => prev.includes(label) ? prev.filter(l => l !== label) : [...prev, label])} className={cn("w-full flex justify-between items-center px-4 py-2 rounded-xl border transition-all text-white", isExpanded ? "bg-white/10 border-white/10" : "bg-white/5 border-white/5 opacity-50")}>
+                <div className="flex items-center gap-3"><History size={16} className={isExpanded ? "text-aqua-400" : "text-slate-600"} /><span className="text-[10px] font-black uppercase tracking-widest font-white">{label}</span><span className="text-[8px] bg-white/5 px-2 py-0.5 rounded-full text-slate-500 font-bold">{records.length} Tareas</span></div>
                 {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </button>
               {isExpanded && (

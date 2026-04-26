@@ -132,7 +132,7 @@ export const WaterParameters: React.FC<WaterParametersProps> = ({ waterParams = 
               return acc;
             }, {} as Record<string, WaterParameter[]>)
         ).map(([weekLabel, params]) => {
-          const isExpanded = expandedWeeks[weekLabel] !== false;
+          const isExpanded = !!expandedWeeks[weekLabel];
           
           return (
             <div key={weekLabel} className="space-y-3">

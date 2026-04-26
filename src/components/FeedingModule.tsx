@@ -94,7 +94,7 @@ export const FeedingModule: React.FC<FeedingModuleProps> = ({ feedingRecords = [
               return acc;
             }, {} as Record<string, Feeding[]>)
         ).map(([weekLabel, records]) => {
-          const isExpanded = expandedWeeks[weekLabel] !== false;
+          const isExpanded = !!expandedWeeks[weekLabel];
           
           return (
             <div key={weekLabel} className="space-y-3">
