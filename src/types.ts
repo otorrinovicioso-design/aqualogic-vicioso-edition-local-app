@@ -14,12 +14,12 @@ export interface Breeder {
   id: string;
   name: string;
   species: Species;
-  sex: 'M' | 'H';
+  sex: 'Macho' | 'Hembra';
   variety: string;
   source: string;
   importDate: string;
   notes?: string;
-  status: 'active' | 'retired' | 'deceased';
+  status: 'Activo' | 'Retirado' | 'Fallecido';
   image?: string;
 }
 
@@ -53,15 +53,15 @@ export interface HealthRecord {
   symptoms: string;
   diagnosis?: string;
   treatment: string;
-  status: 'treating' | 'recovered' | 'deceased';
+  status: 'En tratamiento' | 'Recuperado' | 'Fallecido';
   notes?: string;
 }
 
 export interface Incident {
   id: string;
   date: string;
-  type: 'equipment' | 'parameter' | 'health' | 'other';
-  severity: 'low' | 'medium' | 'high';
+  type: 'equipo' | 'parámetros' | 'salud' | 'otro';
+  severity: 'baja' | 'media' | 'alta';
   description: string;
   resolved: boolean;
   resolutionDate?: string;
@@ -73,11 +73,13 @@ export interface Breeding {
   maleId: string;
   femaleId: string;
   pairName: string;
-  status: 'pairing' | 'spawned' | 'hatching' | 'growing' | 'finished';
+  status: 'Iniciado' | 'Nido' | 'Eclosión' | 'Alevines' | 'Terminado' | 'Fallido';
   spawnDate?: string;
   hatchDate?: string;
   fryCount?: number;
   isFinished: boolean;
+  finishDate?: string;
+  result?: 'Exitoso' | 'Fallido';
   notes?: string;
 }
 
