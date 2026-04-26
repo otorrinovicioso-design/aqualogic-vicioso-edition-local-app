@@ -55,17 +55,22 @@ export const BreedingModule: React.FC<BreedingModuleProps> = ({
     onUpdateCensus('Alevines Betta', count - (oldCount || 0));
   };
 
-  const finalizeProject = (id: string) => {
+  const finalizeProject = (id: string, result: 'Exitoso' | 'Fallido' = 'Exitoso') => {
     const record = breedingRecords.find(r => r.id === id);
     if (!record) return;
 
+    // Descontar alevines que estaban en el proyecto
     onUpdateCensus('Alevines Betta', -(record.fryCount || 0));
-    onUpdateCensus('Betteras recirculadas', finishStats.males);
-    onUpdateCensus('Betta-sorority', finishStats.females);
+
+    if (result === 'Exitoso') {
+      onUpdateCensus('Betteras recirculadas', finishStats.males);
+      onUpdateCensus('Betta-sorority', finishStats.females);
+    }
 
     onUpdate(id, { 
       isFinished: true, 
-      status: 'Terminado',
+      status: result === 'Exitoso' ? 'Terminado' : 'Fallido',
+      result,
       finishDate: new Date().toISOString()
     });
 
@@ -236,7 +241,12 @@ export const BreedingModule: React.FC<BreedingModuleProps> = ({
                          <Calendar size={14} className="text-gold-400" />
                          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Fecha Desove:</span>
                        </div>
-                       <span className="text-[10px] text-white font-bold">{record.spawnDate ? new Date(record.spawnDate).toLocaleDateString() : 'Pendiente'}</span>
+                       <Input 
+                         type="date"
+                         value={record.spawnDate || ''}
+                         onChange={e => onUpdate(record.id, { spawnDate: e.target.value })}
+                         className="h-6 w-28 bg-transparent border-none text-[10px] text-white font-bold p-0 text-right focus:ring-0"
+                       />
                     </div>
                   </div>
                 </div>
@@ -272,13 +282,21 @@ export const BreedingModule: React.FC<BreedingModuleProps> = ({
                           />
                         </div>
                       </div>
-                      <Button 
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 gap-2 mt-4" 
-                        onClick={() => finalizeProject(record.id)}
-                        disabled={finishStats.males + finishStats.females === 0}
-                      >
-                        <CheckCircle size={18} /> CONFIRMAR Y DISTRIBUIR
-                      </Button>
+                      <div className="space-y-2 mt-4">
+                        <Button 
+                          className="w-full bg-emerald-600 hover:bg-emerald-700 gap-2" 
+                          onClick={() => finalizeProject(record.id, 'Exitoso')}
+                          disabled={finishStats.males + finishStats.females === 0}
+                        >
+                          <CheckCircle size={18} /> CONFIRMAR Y DISTRIBUIR
+                        </Button>
+                        <Button 
+                          className="w-full bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-600/30 gap-2" 
+                          onClick={() => finalizeProject(record.id, 'Fallido')}
+                        >
+                          <X size={18} /> MARCAR COMO FALLIDO
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -303,7 +321,12 @@ export const BreedingModule: React.FC<BreedingModuleProps> = ({
                 <p className="text-[8px] text-slate-500 mt-1 uppercase font-bold">Terminado el: {new Date(record.finishDate || '').toLocaleDateString()}</p>
               </div>
               <div className="flex items-center gap-2">
-                 <div className="px-2 py-1 bg-white/5 rounded text-[10px] font-bold text-aqua-400">EXITOSO</div>
+                 <div className={cn(
+                   "px-2 py-1 bg-white/5 rounded text-[10px] font-bold",
+                   record.result === 'Fallido' ? "text-rose-400" : "text-aqua-400"
+                 )}>
+                   {record.result === 'Fallido' ? 'FALLIDO' : 'EXITOSO'}
+                 </div>
               </div>
             </Card>
           ))}
