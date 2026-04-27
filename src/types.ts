@@ -17,9 +17,12 @@ export interface Breeder {
   sex: 'Macho' | 'Hembra';
   variety: string;
   source: string;
+  traits: string;
+  provenance: string;
+  entryDate: string;
   importDate: string;
   notes?: string;
-  status: 'Activo' | 'Retirado' | 'Fallecido';
+  status: 'Activo' | 'Retirado' | 'Fallecido' | 'Baja';
   image?: string;
 }
 
